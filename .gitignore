@@ -6,6 +6,7 @@ backend/node_modules/
 backend/.next/
 backend/.env.local
 backend/package-lock.json
+backend/src/generated/prisma/
 
 # Frontend (React/Vite)
 frontend/node_modules/

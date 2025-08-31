@@ -4,7 +4,7 @@ function App() {
   const [data, setData] = useState<string>("");
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/hello")
+    fetch("http://localhost:3000/api/register")
       .then(res => res.json())
       .then(data => setData(data.message));
   }, []);

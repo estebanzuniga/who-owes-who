@@ -1,0 +1,23 @@
+{
+  "name": "who-owes-who",
+  "version": "1.0.0",
+  "description": "An app about tracking shared expenses between people, showing who paid what and who owes whom",
+  "main": "index.js",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/estebanzuniga/who-owes-who.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/estebanzuniga/who-owes-who/issues"
+  },
+  "homepage": "https://github.com/estebanzuniga/who-owes-who#readme"
+}

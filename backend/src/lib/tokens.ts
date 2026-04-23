@@ -19,19 +19,19 @@ export function signRefreshToken(userId: string): string {
   );
 }
 
-export function setTokenCookie(res: Response, accesToken: string, refreshToken: string): void {
+export function setTokenCookies(res: Response, accesToken: string, refreshToken: string): void {
   const isProduction = env.NODE_ENV === 'production';
   const base = {
     httpOnly: true,
     secure: isProduction,
     sameSite: 'strict' as const,
-  }
+  };
 
-  res.cookie('access_token', accesToken, {
+  res.cookie('accessToken', accesToken, {
     ...base,
     maxAge: ms(env.ACCES_TOKEN_EXPIRY as ms.StringValue),
   });
-  res.cookie('refresh_token', refreshToken, {
+  res.cookie('refreshToken', refreshToken, {
     ...base,
     maxAge: ms(env.REFRESH_TOKEN_EXPIRY as ms.StringValue),
   });

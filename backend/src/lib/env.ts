@@ -9,6 +9,10 @@ const envSchema = z.object({
     .transform((val) => Number(val)),
   CLIENT_URL: z.string().default('http://localhost:5173'),
   DATABASE_URL: z.string().default('postgresql://postgres:postgres@localhost:5432/who-owes-who'),
+  JWT_ACCESS_TOKEN_SECRET: z.string().default('your-secret-key'),
+  JWT_REFRESH_TOKEN_SECRET: z.string().default('your-refresh-secret-key'),
+  ACCES_TOKEN_EXPIRY: z.string().default('15m'),
+  REFRESH_TOKEN_EXPIRY: z.string().default('7d'),
 })
 
 const parsed = envSchema.safeParse(process.env)

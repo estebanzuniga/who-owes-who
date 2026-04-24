@@ -98,7 +98,7 @@ authRouter.post('/refresh', tryCatch(async (req, res) => {
 		httpOnly: true,
 		secure: env.NODE_ENV === 'production',
 		sameSite: 'strict',
-		maxAge: ms(env.ACCES_TOKEN_EXPIRY as ms.StringValue),
+		maxAge: ms(env.ACCESS_TOKEN_EXPIRY as ms.StringValue),
 	});
 	res.json({ ok: true });
 }));

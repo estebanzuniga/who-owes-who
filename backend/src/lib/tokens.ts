@@ -7,7 +7,7 @@ export function signAccessToken(userId: string, email: string): string {
     return jwt.sign(
         { id: userId, email },
         env.JWT_ACCESS_TOKEN_SECRET,
-        { expiresIn: env.ACCES_TOKEN_EXPIRY as ms.StringValue }
+        { expiresIn: env.ACCESS_TOKEN_EXPIRY as ms.StringValue }
     );
 }
 
@@ -29,7 +29,7 @@ export function setTokenCookies(res: Response, accesToken: string, refreshToken:
 
   res.cookie('accessToken', accesToken, {
     ...base,
-    maxAge: ms(env.ACCES_TOKEN_EXPIRY as ms.StringValue),
+    maxAge: ms(env.ACCESS_TOKEN_EXPIRY as ms.StringValue),
   });
   res.cookie('refreshToken', refreshToken, {
     ...base,

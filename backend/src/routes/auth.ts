@@ -37,18 +37,6 @@ authRouter.post('/register', tryCatch(async (req, res) => {
     data: { email, name, passwordHash },
   })
 
-  const accessToken = signAccessToken(user.id, user.email);
-  const refreshToken = signRefreshToken(user.id);
-
-  await prisma.refreshToken.create({
-    data: {
-      token: refreshToken,
-      userId: user.id,
-      expiresAt: new Date(Date.now() + ms(env.REFRESH_TOKEN_EXPIRY as ms.StringValue)),
-    }
-  });
-
-  setTokenCookies(res, accessToken, refreshToken);
   res.status(201).json({ id: user.id, email: user.email, name: user.name });  
 }));
 

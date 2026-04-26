@@ -31,16 +31,22 @@ coupleAccountRouter.post('/', tryCatch(async (req, res) => {
     },
   })
 
-  res.status(201).json(couple);
+  const invite = await prisma.coupleInvite.create({
+    data: {
+      coupleId: couple.id,
+      expiresAt: new Date(Date.now() + ms(env.INVITE_TOKEN_EXPIRY as ms.StringValue)),
+    },
+  });
+
+  res.status(201).json({ couple, invitationLink: `${env.FRONTEND_URL}/join/?token=${invite.token}` });
 }));
 
-coupleAccountRouter.get('/', tryCatch(async (req, res) => {
+coupleAccountRouter.get('/:coupleId', tryCatch(async (req, res) => {
+  const { coupleId } = req.params;
+
   const couple = await prisma.coupleAccount.findFirst({
     where: {
-      OR: [
-        { creatorId: req.user.id },
-        { invitedId: req.user.id },
-      ],
+      id: coupleId as string,
     },
     include: {
       creator: { select: { id: true, email: true, name: true } },
@@ -56,41 +62,45 @@ coupleAccountRouter.get('/', tryCatch(async (req, res) => {
   res.json(couple);
 }));
 
-const coupleDeleteSchema = z.object({
-  coupleId: z.uuid(),
-});
+coupleAccountRouter.delete('/:coupleId', tryCatch(async (req, res) => {
+  const coupleId = req.params.coupleId as string;
 
-coupleAccountRouter.delete('/', validateBody(coupleDeleteSchema), tryCatch(async (req, res) => {
-  const { coupleId } = req.body;
-
-  const deletedCouple = await prisma.coupleAccount.findFirst({
+  const toDeleteCouple = await prisma.coupleAccount.findFirst({
     where: {
       id: coupleId,
     }
   });
 
-  if (!deletedCouple) {
+  if (!toDeleteCouple) {
     res.status(404).json({ message: 'Couple not found' });
     return;
   }
 
-  if (deletedCouple.creatorId !== req.user.id && deletedCouple.invitedId !== req.user.id) {
+  if (toDeleteCouple.creatorId !== req.user.id && toDeleteCouple.invitedId !== req.user.id) {
     res.status(403).json({ message: 'User is not a member of this couple' });
     return;
   }
 
-  await prisma.coupleAccount.delete({
+  const deletedCouple = await prisma.coupleAccount.delete({
     where: {
       id: coupleId,
-    }
+    },
   });
 
   res.json({ message: 'Couple deleted successfully', couple: deletedCouple });
 }));
 
-coupleAccountRouter.post('/invite', tryCatch(async (req, res) => {
+const coupleInviteSchema = z.object({
+  coupleId: z.cuid(),
+});
+
+coupleAccountRouter.post('/invite', validateBody(coupleInviteSchema), tryCatch(async (req, res) => {
+  const { coupleId } = req.body;
+  
   const couple = await prisma.coupleAccount.findFirst({
-    where: { creatorId: req.user.id },
+    where: {
+      id: coupleId,
+    },
   });
 
   if (!couple) {
@@ -115,12 +125,19 @@ coupleAccountRouter.post('/invite', tryCatch(async (req, res) => {
       expiresAt: new Date(Date.now() + ms(env.INVITE_TOKEN_EXPIRY as ms.StringValue)),
     },
   });
-  res.json({ token: invite.token });
+
+  res.json({ invitationLink: `${env.FRONTEND_URL}/join/?token=${invite.token}` });
 }));
 
-coupleAccountRouter.post('/join/:token', tryCatch(async (req, res) => {
+const joinCoupleSchema = z.object({
+  token: z.cuid(),
+});
+
+coupleAccountRouter.post('/join', validateBody(joinCoupleSchema), tryCatch(async (req, res) => {
+  const { token } = req.body;
+  
   const invite = await prisma.coupleInvite.findUnique({
-    where: { token: req.params.token as string },
+    where: { token },
     include: { couple: true },
   })
 

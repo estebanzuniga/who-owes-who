@@ -6,6 +6,7 @@ import 'dotenv/config'
 import { env } from './lib/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { authRouter } from './routes/auth.js'
+import { coupleAccountRouter } from './routes/coupleAccount.js'
 
 const app = express()
 
@@ -18,6 +19,7 @@ app.use(cookieParser())
 app.use(morgan('dev'))
 
 app.use('/auth', authRouter)
+app.use('/account', coupleAccountRouter)
 
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
 

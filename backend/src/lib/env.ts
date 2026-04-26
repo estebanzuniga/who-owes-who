@@ -8,7 +8,7 @@ const envSchema = z.object({
     .default('3001')
     .transform((val) => Number(val)),
   DATABASE_URL: z.string().default('postgresql://postgres:postgres@localhost:5432/who-owes-who'),
-  CLIENT_URL: z.string().default('http://localhost:5173'),
+  FRONTEND_URL: z.string().default('http://localhost:5173'),
   JWT_ACCESS_TOKEN_SECRET: z.string().default('your-secret-key'),
   JWT_REFRESH_TOKEN_SECRET: z.string().default('your-refresh-secret-key'),
   ACCESS_TOKEN_EXPIRY: z.string().default('15m'),

@@ -10,7 +10,7 @@ import { authRouter } from './routes/auth.js'
 const app = express()
 
 app.use(cors({
-  origin: env.CLIENT_URL,
+  origin: env.FRONTEND_URL,
   credentials: true,   // required for cookies
 }))
 app.use(express.json())

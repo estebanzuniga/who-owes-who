@@ -14,8 +14,8 @@ coupleAccountRouter.post('/', tryCatch(async (req, res) => {
   const existingCoupleAccounts = await prisma.coupleAccount.findMany({
     where: {
       OR: [
-        { partnerAId: req.user.id },
-        { partnerBId: req.user.id },
+        { creatorId: req.user.id },
+        { invitedId: req.user.id },
       ],
     }
   });
@@ -27,7 +27,7 @@ coupleAccountRouter.post('/', tryCatch(async (req, res) => {
 
   const couple = await prisma.coupleAccount.create({
     data: {
-      partnerAId: req.user.id,
+      creatorId: req.user.id,
     },
   })
 
@@ -38,13 +38,13 @@ coupleAccountRouter.get('/', tryCatch(async (req, res) => {
   const couple = await prisma.coupleAccount.findFirst({
     where: {
       OR: [
-        { partnerAId: req.user.id },
-        { partnerBId: req.user.id },
+        { creatorId: req.user.id },
+        { invitedId: req.user.id },
       ],
     },
     include: {
-      partnerA: { select: { id: true, email: true, name: true } },
-      partnerB: { select: { id: true, email: true, name: true } },
+      creator: { select: { id: true, email: true, name: true } },
+      invited: { select: { id: true, email: true, name: true } },
     },
   });
 
@@ -74,7 +74,7 @@ coupleAccountRouter.delete('/', validateBody(coupleDeleteSchema), tryCatch(async
     return;
   }
 
-  if (deletedCouple.partnerAId !== req.user.id && deletedCouple.partnerBId !== req.user.id) {
+  if (deletedCouple.creatorId !== req.user.id && deletedCouple.invitedId !== req.user.id) {
     res.status(403).json({ message: 'User is not a member of this couple' });
     return;
   }
@@ -90,7 +90,7 @@ coupleAccountRouter.delete('/', validateBody(coupleDeleteSchema), tryCatch(async
 
 coupleAccountRouter.post('/invite', tryCatch(async (req, res) => {
   const couple = await prisma.coupleAccount.findFirst({
-    where: { partnerAId: req.user.id },
+    where: { creatorId: req.user.id },
   });
 
   if (!couple) {
@@ -98,7 +98,7 @@ coupleAccountRouter.post('/invite', tryCatch(async (req, res) => {
     return;
   }
 
-  if (couple.partnerBId) {
+  if (couple.invitedId) {
     res.status(400).json({ message: 'Couple already has a partner' });
     return;
   }
@@ -148,19 +148,19 @@ coupleAccountRouter.post('/join/:token', tryCatch(async (req, res) => {
     return;
   }
 
-  if (invite.couple.partnerAId === req.user.id) {
+  if (invite.couple.creatorId === req.user.id) {
     res.status(400).json({ message: 'User is already the couple creator' });
     return;
   }
 
-  if (invite.couple.partnerBId) {
+  if (invite.couple.invitedId) {
     res.status(400).json({ message: 'Couple already has a partner' });
     return;
   }
 
   coupleAccount = await prisma.coupleAccount.update({
     where: { id: invite.coupleId },
-    data: { partnerBId: req.user.id },
+    data: { invitedId: req.user.id },
   });
   
   await prisma.coupleInvite.update({

@@ -14,8 +14,9 @@ model User {
   passwordHash String
   createdAt    DateTime @default(now())
 
-  coupleAsPartnerA CoupleAccount? @relation("PartnerA")
-  coupleAsPartnerB CoupleAccount? @relation("PartnerB")
+  coupleAccountAsCreator CoupleAccount[] @relation("CreatorUser")
+  coupleAccountAsInvited CoupleAccount[] @relation("InvitedUser")
+
   refreshTokens    RefreshToken[]
 }
 
@@ -34,12 +35,16 @@ model CoupleAccount {
   currency  String   @default("CLP")
   createdAt DateTime @default(now())
 
-  partnerAId String  @unique
-  partnerBId String? @unique
-  partnerA   User    @relation("PartnerA", fields: [partnerAId], references: [id])
-  partnerB   User?   @relation("PartnerB", fields: [partnerBId], references: [id])
+  creatorId String
+  creator   User    @relation("CreatorUser", fields: [creatorId], references: [id])
+
+  invitedId String?
+  invited   User?   @relation("InvitedUser", fields: [invitedId], references: [id])
 
   invite     CoupleInvite?
+
+  @@index([creatorId])
+  @@index([invitedId])
 }
 
 model CoupleInvite {

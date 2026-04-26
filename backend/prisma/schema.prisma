@@ -13,7 +13,10 @@ model User {
   name         String
   passwordHash String
   createdAt    DateTime @default(now())
+  active       Boolean  @default(true)
 
+  coupleAsPartnerA CoupleAccount? @relation("PartnerA")
+  coupleAsPartnerB CoupleAccount? @relation("PartnerB")
   refreshTokens    RefreshToken[]
 }
 
@@ -25,4 +28,28 @@ model RefreshToken {
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model CoupleAccount {
+  id        String   @id @default(cuid())
+  currency  String   @default("CLP")
+  createdAt DateTime @default(now())
+  active    Boolean  @default(true)
+
+  partnerAId String  @unique
+  partnerBId String? @unique
+  partnerA   User    @relation("PartnerA", fields: [partnerAId], references: [id])
+  partnerB   User?   @relation("PartnerB", fields: [partnerBId], references: [id])
+
+  invite     CoupleInvite?
+}
+
+model CoupleInvite {
+  id        String    @id @default(cuid())
+  token     String    @unique @default(cuid())
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  coupleId String        @unique
+  couple   CoupleAccount @relation(fields: [coupleId], references: [id])
 }

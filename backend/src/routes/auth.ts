@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
 import { signAccessToken, signRefreshToken, setTokenCookies } from '../lib/tokens.js'
 import { authMiddleware } from '../middleware/auth.js'
+import { validateBody } from '../middleware/schemaValidator.js'
 import { tryCatch } from '../lib/tryCatch.js'
 import { env } from '../lib/env.js'
 import ms from 'ms';
@@ -22,9 +23,9 @@ const loginSchema = z.object({
   password: z.string().min(8),
 });
 
-authRouter.post('/register', tryCatch(async (req, res) => {
+authRouter.post('/register', validateBody(registerSchema), tryCatch(async (req, res) => {
 	console.log('Registering user');
-  const { email, password, name } = registerSchema.parse(req.body);
+  const { email, password, name } = req.body;
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
@@ -40,8 +41,8 @@ authRouter.post('/register', tryCatch(async (req, res) => {
   res.status(201).json({ id: user.id, email: user.email, name: user.name });  
 }));
 
-authRouter.post('/login', tryCatch(async (req, res) => {
-  const { email, password } = loginSchema.parse(req.body);
+authRouter.post('/login', validateBody(loginSchema), tryCatch(async (req, res) => {
+  const { email, password } = req.body;
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
@@ -119,5 +120,11 @@ authRouter.get('/profile', authMiddleware, tryCatch(async (req, res) => {
 		where: { id: req.user.id },
 		select: { id: true, email: true, name: true },
 	});
+
+	if (!user) {
+		res.status(404).json({ message: 'User not found' });
+		return;
+	}
+
 	res.json(user);
 }));

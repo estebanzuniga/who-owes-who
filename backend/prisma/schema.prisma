@@ -54,5 +54,5 @@ model CoupleInvite {
   usedAt    DateTime?
 
   coupleId String        @unique
-  couple   CoupleAccount @relation(fields: [coupleId], references: [id])
+  couple   CoupleAccount @relation(fields: [coupleId], references: [id], onDelete: Cascade)
 }

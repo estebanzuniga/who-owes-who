@@ -18,11 +18,6 @@ const registerSchema = z.object({
   name: z.string().min(1),
 });
 
-const loginSchema = z.object({
-  email: z.email(),
-  password: z.string().min(8),
-});
-
 authRouter.post('/register', validateBody(registerSchema), tryCatch(async (req, res) => {
 	console.log('Registering user');
   const { email, password, name } = req.body;
@@ -40,6 +35,11 @@ authRouter.post('/register', validateBody(registerSchema), tryCatch(async (req, 
 
   res.status(201).json({ id: user.id, email: user.email, name: user.name });  
 }));
+
+const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+});
 
 authRouter.post('/login', validateBody(loginSchema), tryCatch(async (req, res) => {
   const { email, password } = req.body;

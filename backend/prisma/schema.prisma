@@ -13,7 +13,6 @@ model User {
   name         String
   passwordHash String
   createdAt    DateTime @default(now())
-  active       Boolean  @default(true)
 
   coupleAsPartnerA CoupleAccount? @relation("PartnerA")
   coupleAsPartnerB CoupleAccount? @relation("PartnerB")
@@ -34,7 +33,6 @@ model CoupleAccount {
   id        String   @id @default(cuid())
   currency  String   @default("CLP")
   createdAt DateTime @default(now())
-  active    Boolean  @default(true)
 
   partnerAId String  @unique
   partnerBId String? @unique

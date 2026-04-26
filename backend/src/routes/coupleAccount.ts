@@ -7,10 +7,10 @@ import { tryCatch } from '../lib/tryCatch.js'
 import { env } from '../lib/env.js'
 import ms from 'ms';
 
-export const coupleRouter = Router();
-coupleRouter.use(authMiddleware);
+export const coupleAccountRouter = Router();
+coupleAccountRouter.use(authMiddleware);
 
-coupleRouter.post('/', tryCatch(async (req, res) => {
+coupleAccountRouter.post('/', tryCatch(async (req, res) => {
   const existingCoupleAccounts = await prisma.coupleAccount.findMany({
     where: {
       OR: [
@@ -34,7 +34,7 @@ coupleRouter.post('/', tryCatch(async (req, res) => {
   res.status(201).json(couple);
 }));
 
-coupleRouter.get('/', tryCatch(async (req, res) => {
+coupleAccountRouter.get('/', tryCatch(async (req, res) => {
   const couple = await prisma.coupleAccount.findFirst({
     where: {
       OR: [
@@ -60,7 +60,7 @@ const coupleDeleteSchema = z.object({
   coupleId: z.uuid(),
 });
 
-coupleRouter.delete('/', validateBody(coupleDeleteSchema), tryCatch(async (req, res) => {
+coupleAccountRouter.delete('/', validateBody(coupleDeleteSchema), tryCatch(async (req, res) => {
   const { coupleId } = req.body;
 
   const deletedCouple = await prisma.coupleAccount.findFirst({
@@ -79,19 +79,16 @@ coupleRouter.delete('/', validateBody(coupleDeleteSchema), tryCatch(async (req, 
     return;
   }
 
-  await prisma.coupleAccount.update({
+  await prisma.coupleAccount.delete({
     where: {
       id: coupleId,
-    },
-    data: {
-      active: false,
-    },
+    }
   });
 
   res.json({ message: 'Couple deleted successfully', couple: deletedCouple });
 }));
 
-coupleRouter.post('/invite', tryCatch(async (req, res) => {
+coupleAccountRouter.post('/invite', tryCatch(async (req, res) => {
   const couple = await prisma.coupleAccount.findFirst({
     where: { partnerAId: req.user.id },
   });
@@ -121,7 +118,7 @@ coupleRouter.post('/invite', tryCatch(async (req, res) => {
   res.json({ token: invite.token });
 }));
 
-coupleRouter.post('/join/:token', tryCatch(async (req, res) => {
+coupleAccountRouter.post('/join/:token', tryCatch(async (req, res) => {
   const invite = await prisma.coupleInvite.findUnique({
     where: { token: req.params.token as string },
     include: { couple: true },

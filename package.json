@@ -4,8 +4,14 @@
   "description": "An app about tracking shared expenses between people, showing who paid what and who owes whom",
   "main": "index.js",
   "private": true,
-  "workspaces": ["frontend", "backend"],
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "start": "npm run start --workspace=backend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/estebanzuniga/who-owes-who/issues"
   },
-  "homepage": "https://github.com/estebanzuniga/who-owes-who#readme"
+  "homepage": "https://github.com/estebanzuniga/who-owes-who#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

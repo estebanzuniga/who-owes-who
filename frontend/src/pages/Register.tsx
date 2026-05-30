@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { ChevronLeftIcon } from "../components/SVGIcons";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -59,15 +60,7 @@ export default function Register() {
         className="w-8 h-8 flex items-center justify-center -ml-1 mb-8 text-ink"
         aria-label="Go back"
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path
-            d="M12.5 15L7.5 10L12.5 5"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ChevronLeftIcon size={16} />
       </button>
 
       <h1 className="text-3xl font-extrabold text-ink mb-1">

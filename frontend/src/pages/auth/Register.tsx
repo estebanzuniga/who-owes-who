@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
-import { ChevronLeftIcon } from "../components/SVGIcons";
+import api from "../../api/axios";
+import { ChevronLeftIcon } from "../../components/Icons";
 
 export default function Register() {
   const navigate = useNavigate();

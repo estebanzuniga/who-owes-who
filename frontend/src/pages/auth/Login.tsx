@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
-import { useAuthStore } from "../store/authStore";
-import { ChevronLeftIcon } from "../components/SVGIcons";
+import api from "../../api/axios";
+import { useAuthStore } from "../../store/authStore";
+import { ChevronLeftIcon } from "../../components/Icons";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ export default function Login() {
     try {
       await api.post("/auth/login", { email, password });
       await fetchMe();
-      navigate("/");
+      navigate("/home");
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { message?: string } } })?.response?.data

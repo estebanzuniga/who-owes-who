@@ -78,3 +78,25 @@ export const PlusIcon = ({ size }: { size?: number }) => (
         <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </Icon>
 );
+
+export const CopyIcon = ({ size }: { size?: number }) => (
+    <Icon size={size}>
+        <rect x="6.5" y="6.5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M13 6.5V5A1.5 1.5 0 0011.5 3.5h-6A1.5 1.5 0 004 5v6A1.5 1.5 0 005.5 12.5H7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </Icon>
+);
+
+export const ShareIcon = ({ size }: { size?: number }) => (
+    <Icon size={size}>
+        <circle cx="14.5" cy="5" r="2" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="5.5" cy="10" r="2" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="14.5" cy="15" r="2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M7.3 9l5.4-3M7.3 11l5.4 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </Icon>
+);
+
+export const CheckIcon = ({ size }: { size?: number }) => (
+    <Icon size={size}>
+        <path d="M4.5 10.5l3.5 3.5 7.5-8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </Icon>
+);

@@ -50,6 +50,41 @@ coupleAccountRouter.post('/', validateBody(createCoupleSchema), tryCatch(async (
   res.status(201).json({ couple, invitationLink: `${env.FRONTEND_URL}/join/?token=${invite.token}` });
 }));
 
+coupleAccountRouter.get('/invite', tryCatch(async (req, res) => {
+  const token = req.query.token as string | undefined;
+
+  if (!token) {
+    res.status(400).json({ message: 'Token is required' });
+    return;
+  }
+
+  const invite = await prisma.coupleInvite.findUnique({
+    where: { token },
+    include: {
+      couple: {
+        include: { creator: { select: { name: true } } },
+      },
+    },
+  });
+
+  if (!invite) {
+    res.status(404).json({ message: 'Invalid invite token' });
+    return;
+  }
+
+  if (invite.usedAt) {
+    res.status(400).json({ message: 'Invite token has already been used' });
+    return;
+  }
+
+  if (invite.expiresAt < new Date()) {
+    res.status(400).json({ message: 'Invite token has expired' });
+    return;
+  }
+
+  res.json({ creatorName: invite.couple.creator.name });
+}));
+
 coupleAccountRouter.get('/:coupleId', tryCatch(async (req, res) => {
   const { coupleId } = req.params;
 
@@ -105,7 +140,7 @@ const coupleInviteSchema = z.object({
 
 coupleAccountRouter.post('/invite', validateBody(coupleInviteSchema), tryCatch(async (req, res) => {
   const { coupleId } = req.body;
-  
+
   const couple = await prisma.coupleAccount.findFirst({
     where: {
       id: coupleId,
@@ -144,7 +179,7 @@ const joinCoupleSchema = z.object({
 
 coupleAccountRouter.post('/join', validateBody(joinCoupleSchema), tryCatch(async (req, res) => {
   const { token } = req.body;
-  
+
   const invite = await prisma.coupleInvite.findUnique({
     where: { token },
     include: { couple: true },
@@ -188,7 +223,7 @@ coupleAccountRouter.post('/join', validateBody(joinCoupleSchema), tryCatch(async
     where: { id: invite.coupleId },
     data: { invitedId: req.user.id },
   });
-  
+
   await prisma.coupleInvite.update({
     where: { token: invite.token },
     data: { usedAt: new Date() },

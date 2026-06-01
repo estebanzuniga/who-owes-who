@@ -32,6 +32,7 @@ model RefreshToken {
 
 model CoupleAccount {
   id        String   @id @default(cuid())
+  name      String   @default("Shared account")
   currency  String   @default("CLP")
   createdAt DateTime @default(now())
 

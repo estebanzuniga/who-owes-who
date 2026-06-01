@@ -10,7 +10,14 @@ import ms from 'ms';
 export const coupleAccountRouter = Router();
 coupleAccountRouter.use(authMiddleware);
 
-coupleAccountRouter.post('/', tryCatch(async (req, res) => {
+const createCoupleSchema = z.object({
+  name: z.string().trim().min(1).max(40),
+  currency: z.enum(['CLP', 'USD']).default('CLP'),
+});
+
+coupleAccountRouter.post('/', validateBody(createCoupleSchema), tryCatch(async (req, res) => {
+  const { name, currency } = req.body;
+
   const existingCoupleAccounts = await prisma.coupleAccount.findMany({
     where: {
       OR: [
@@ -27,6 +34,8 @@ coupleAccountRouter.post('/', tryCatch(async (req, res) => {
 
   const couple = await prisma.coupleAccount.create({
     data: {
+      name,
+      currency,
       creatorId: req.user.id,
     },
   })

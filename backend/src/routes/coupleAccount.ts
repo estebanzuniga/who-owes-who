@@ -50,6 +50,23 @@ coupleAccountRouter.post('/', validateBody(createCoupleSchema), tryCatch(async (
   res.status(201).json({ couple, invitationLink: `${env.FRONTEND_URL}/join/?token=${invite.token}` });
 }));
 
+coupleAccountRouter.get('/', tryCatch(async (req, res) => {
+  const couples = await prisma.coupleAccount.findMany({
+    where: {
+      OR: [
+        { creatorId: req.user.id },
+        { invitedId: req.user.id },
+      ],
+    },
+    include: {
+      creator: { select: { id: true, email: true, name: true } },
+      invited: { select: { id: true, email: true, name: true } },
+    },
+  });
+
+  res.json(couples);
+}));
+
 coupleAccountRouter.get('/invite', tryCatch(async (req, res) => {
   const token = req.query.token as string | undefined;
 
